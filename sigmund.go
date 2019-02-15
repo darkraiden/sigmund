@@ -38,13 +38,12 @@ type DBItem struct {
 // New is the Package constructor that initialises
 // the Sigmund config
 func New(region, asgName, policyName, tableName, metric string) (*Sigmund, error) {
-	var dbKey string
 	err := checkConfig(region, asgName, policyName, tableName, metric)
 	if err != nil {
 		return nil, err
 	}
 
-	dbKey, err = identifyMetric(metric)
+	dbKey, err := identifyMetric(metric)
 	if err != nil {
 		return nil, err
 	}
