@@ -55,3 +55,10 @@ func TestNegativeIdentifyMetric(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckConfig(t *testing.T) {
+	err := checkConfig("aRegion", "anASGName", "aPolicyName", "aTableName", "LowMemory")
+	if err != nil {
+		t.Errorf("Invalid options, something went wrong: %v", err)
+	}
+}

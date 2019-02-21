@@ -2,6 +2,32 @@ package sigmund
 
 import "errors"
 
+// Metric is a type that will be used to
+// serialise the metric types
+// received from SNS
+type Metric int
+
+const (
+	lowMemory Metric = iota
+	lowCPU
+	highMemory
+	highCPU
+)
+
+var stringsToMetrics = map[string]Metric{
+	"LowMemory":  lowMemory,
+	"LowCPU":     lowCPU,
+	"HighMemory": highMemory,
+	"HighCPU":    highCPU,
+}
+
+var metricsToStrings = map[Metric]string{
+	lowMemory:  "LowMemory",
+	lowCPU:     "LowCPU",
+	highMemory: "HighMemory",
+	highCPU:    "HighCPU",
+}
+
 // Autoscaling represents the structure of a series
 // of AWS autoscaling group parameters to trigger
 // a dimension change
@@ -63,6 +89,7 @@ func New(region, asgName, policyName, tableName, metric string) (*Sigmund, error
 }
 
 func checkConfig(region, asgName, policyName, tableName, metric string) error {
+	_, okMetric := stringsToMetrics[metric]
 	switch {
 	case region == "":
 		return errors.New("Region cannot be empty")
@@ -74,6 +101,8 @@ func checkConfig(region, asgName, policyName, tableName, metric string) error {
 		return errors.New("Table name cannot be empty")
 	case metric == "":
 		return errors.New("Key cannot be empty")
+	case !okMetric:
+		return errors.New("Invalid metric Key")
 	default:
 		return nil
 	}
