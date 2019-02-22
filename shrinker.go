@@ -5,22 +5,12 @@ import (
 	"github.com/darkraiden/sigmund/pkg/storage/dynamo"
 )
 
-type dbKey struct {
-	metric string
-	value  bool
-}
-
 // Shrink is the core function of the package
 // which Executes an Autoscaling Group Policy
 // when requirements are met
 func (s *Sigmund) Shrink() error {
-	key, err := s.identifyDBKey()
-	if err != nil {
-		return err
-	}
-
 	// Create a new DBClient
-	dbClient, err := s.newDBClient(key.metric)
+	dbClient, err := s.newDBClient(metricsTodbKey[s.Key].metric)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,5 @@
 package sigmund
 
-import "fmt"
-
 // Metric is a type that will be used to
 // serialise the metric types
 // received from SNS
@@ -28,32 +26,26 @@ var metricsToStrings = map[Metric]string{
 	okCPU:     "OkCPU",
 }
 
-func (s *Sigmund) identifyDBKey() (*dbKey, error) {
-	switch metricsToStrings[s.Dynamo.Key] {
-	case "LowMemory":
-		return &dbKey{
-			"isLowMemory",
-			true,
-		}, nil
+type dbKey struct {
+	metric string
+	value  bool
+}
 
-	case "OkMemory":
-		return &dbKey{
-			"isLowMemory",
-			false,
-		}, nil
-
-	case "LowCPU":
-		return &dbKey{
-			"isLowCPU",
-			true,
-		}, nil
-
-	case "OkCPU":
-		return &dbKey{
-			"isLowCPU",
-			false,
-		}, nil
-	default:
-		return nil, fmt.Errorf("I can't identify the Key to be used for this DB")
-	}
+var metricsTodbKey = map[Metric]dbKey{
+	lowMemory: {
+		metric: "isLowMemory",
+		value:  true,
+	},
+	lowCPU: {
+		metric: "isLowCPU",
+		value:  true,
+	},
+	okMemory: {
+		metric: "isLowMemory",
+		value:  false,
+	},
+	okCPU: {
+		metric: "isLowCPU",
+		value:  false,
+	},
 }
