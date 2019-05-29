@@ -1,1 +1,2 @@
 -   [Davide Di Mauro](https://github.com/darkraiden)
+-   [Salvatore Tards](https://github.com/Stakct)
