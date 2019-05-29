@@ -34,6 +34,10 @@ func checkAutoscalingError(err error) error {
 				return fmt.Errorf("%v", aerr.Error())
 			}
 		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.//^
+			//I would probably rewrite this to make the default be to return error and handle the specific cases you're interested in here.
+			//Wrapping a switch in an if is tough to read.
 			return err
 		}
 	}
