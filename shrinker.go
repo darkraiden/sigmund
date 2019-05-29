@@ -12,12 +12,13 @@ import (
 // when requirements are met
 func (s *Sigmund) Shrink() {
 	dbClient, err := s.newDBClient(metricsTodbKey[s.Key].metric)
+  
 	if err != nil {
 		s.Log.WithError(err).Panic("Could not connect to DynamoDB")
 	}
 
 	// Run a Select query
-	item, err := s.readDynamo(dbClient)
+	item, err = s.readDynamo(dbClient)
 	if err != nil {
 		s.Log.WithError(err).Panic("Could not read from DynamoDB")
 	}
@@ -58,7 +59,6 @@ func (s *Sigmund) Shrink() {
 				"metric":     "isLowCPU == false",
 			}).Panic()
 		}
-		item.IsLowCPU = false
 	}
 
 	if item.IsLowCPU && item.IsLowMemory {
@@ -80,8 +80,8 @@ func (s *Sigmund) Shrink() {
 	}
 }
 
-func (s *Sigmund) newDBClient(key string) (*dynamo.Client, error) {
-	dynamo, err := dynamo.New(s.Dynamo.TableName, s.Dynamo.Region, key)
+func (s *Sigmund) newDBClient() (*dynamo.Client, error) {
+	dynamo, err := dynamo.New(s.Dynamo.TableName, s.Dynamo.Region, s.Dynamo.Key)
 	if err != nil {
 		return nil, err
 	}

@@ -19,7 +19,7 @@ type Autoscaling struct {
 type Dynamo struct {
 	TableName string
 	Region    string
-	Key       Metric
+	Key       string
 }
 
 // Logger wraps a logger, so the correct logging context
