@@ -9,35 +9,43 @@ import (
 // which Executes an Autoscaling Group Policy
 // when requirements are met
 func (s *Sigmund) Shrink() error {
-	var item *DBItem
-	dbClient, err := s.newDBClient()
+	// Create a new DBClient
+	dbClient, err := s.newDBClient(metricsTodbKey[s.Key].metric)
 	if err != nil {
 		return err
 	}
 
 	// Run a Select query
-	item, err = s.readDynamo(dbClient)
+	item, err := s.readDynamo(dbClient)
 	if err != nil {
 		return err
 	}
 
-	switch s.Dynamo.Key {
-	case "isLowCPU":
-		if !item.IsLowCPU {
-			err = dbClient.WriteToTable(s.Dynamo.TableName, s.Dynamo.Key, true)
-			if err != nil {
-				return err
-			}
-			item.IsLowCPU = true
+	switch metricsToStrings[s.Dynamo.Key] {
+	case "LowMemory":
+		err := dbClient.WriteToTable(s.Dynamo.TableName, "isLowMemory", true)
+		if err != nil {
+			return err
 		}
-	case "isLowMemory":
-		if !item.IsLowMemory {
-			err = dbClient.WriteToTable(s.Dynamo.TableName, s.Dynamo.Key, true)
-			if err != nil {
-				return err
-			}
-			item.IsLowMemory = true
+		item.IsLowMemory = true
+	case "OkMemory":
+		err := dbClient.WriteToTable(s.Dynamo.TableName, "isLowMemory", false)
+		if err != nil {
+			return err
 		}
+		item.IsLowMemory = false
+	case "LowCPU":
+		err := dbClient.WriteToTable(s.Dynamo.TableName, "isLowCPU", true)
+		if err != nil {
+			return err
+		}
+		item.IsLowCPU = true
+	case "OkCPU":
+		err := dbClient.WriteToTable(s.Dynamo.TableName, "isLowCPU", false)
+		if err != nil {
+			return err
+		}
+		item.IsLowCPU = false
 	}
 
 	if item.IsLowCPU && item.IsLowMemory {
@@ -58,8 +66,8 @@ func (s *Sigmund) Shrink() error {
 	return nil
 }
 
-func (s *Sigmund) newDBClient() (*dynamo.Client, error) {
-	dynamo, err := dynamo.New(s.Dynamo.TableName, s.Dynamo.Region, s.Dynamo.Key)
+func (s *Sigmund) newDBClient(key string) (*dynamo.Client, error) {
+	dynamo, err := dynamo.New(s.Dynamo.TableName, s.Dynamo.Region, key)
 	if err != nil {
 		return nil, err
 	}

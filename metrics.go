@@ -1,19 +1,51 @@
 package sigmund
 
-import (
-	"fmt"
+// Metric is a type that will be used to
+// serialise the metric types
+// received from SNS
+type Metric int
+
+const (
+	lowMemory Metric = iota
+	lowCPU
+	okMemory
+	okCPU
 )
 
-func identifyMetric(m string) (string, error) {
-	var k string
-	var err error
-	switch {
-	case m == "memory":
-		k = "isLowMemory"
-	case m == "cpu":
-		k = "isLowCPU"
-	default:
-		err = fmt.Errorf("%v is an invalid parameter. Please provide either 'memory' or 'cpu' keys", m)
-	}
-	return k, err
+var stringsToMetrics = map[string]Metric{
+	"LowMemory": lowMemory,
+	"LowCPU":    lowCPU,
+	"OkMemory":  okMemory,
+	"OkCPU":     okCPU,
+}
+
+var metricsToStrings = map[Metric]string{
+	lowMemory: "LowMemory",
+	lowCPU:    "LowCPU",
+	okMemory:  "OkMemory",
+	okCPU:     "OkCPU",
+}
+
+type dbKey struct {
+	metric string
+	value  bool
+}
+
+var metricsTodbKey = map[Metric]dbKey{
+	lowMemory: {
+		metric: "isLowMemory",
+		value:  true,
+	},
+	lowCPU: {
+		metric: "isLowCPU",
+		value:  true,
+	},
+	okMemory: {
+		metric: "isLowMemory",
+		value:  false,
+	},
+	okCPU: {
+		metric: "isLowCPU",
+		value:  false,
+	},
 }
