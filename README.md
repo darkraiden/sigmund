@@ -47,7 +47,7 @@ First things first, initialise a `Sigmund` from your application:
 
 ```go
   // Get a Sigmund
-  s, err := sigmund.New("eu-west-1", "anASGName", "anASGPolicyName", "aDynamoTableName", "LowCPU") // LowCPU, LowMemory, OKCPU and OKMemory are accepted values
+  s, err := sigmund.New("eu-west-1", "anASGName", "anASGPolicyName", "aDynamoTableName", "cpu") // cpu can be replaced by memory, depending on which metric changed on your Cloudwatch Alerts
   if err != nil {
     panic(err)
   }
@@ -77,10 +77,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/darkraiden/sigmund/tags).
-
-## To Do
-
--   [ ] Add meaningful tests 🙈
 
 ## Authors
 
